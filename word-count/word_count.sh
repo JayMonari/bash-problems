@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S bash -x
 shopt -s assoc_expand_once
 
 declare -A freq
@@ -11,10 +11,14 @@ for sentence in "$@"; do
     word=${BASH_REMATCH[0]}
     sentence=${sentence#*${BASH_REMATCH[0]}}
     if [[ $word =~ ^\' ]]; then
-      # Remove ^' and '$
-      word=${word:1:$(( ${#word} - 2 ))}
+      word=${word:1:${#word}}
     fi
-    (( freq[$word] += 1 ))
+    if [[ $word =~ \'$ ]]; then
+      word=${word:0:$(( ${#word} - 1 ))}
+    fi
+    if [ $word ]; then
+      (( freq[$word] += 1 ))
+    fi
   done
 done
 
